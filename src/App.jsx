@@ -64,6 +64,9 @@ NOTES about design decisions:
 
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import Header from './components/Header'
+import Card from './components/Card'
+import AddWord from './components/AddWord'
 
 // Replace by env vars in your deployment
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
@@ -88,9 +91,7 @@ function Center ({ children }) {
   return <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">{children}</div>
 }
 
-function Card ({ children }) {
-  return <div className="bg-white shadow rounded-lg p-6 w-full max-w-3xl">{children}</div>
-}
+
 
 export default function App () {
   const [session, setSession] = useState(null)
@@ -184,24 +185,13 @@ export default function App () {
 
   return (
     <>
-      <div className="fixed w-screen bg-blue-100 p-5 px-10 mx-auto">
-        <header className="  flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Deutsch Words</h1>
-          <div className="flex items-center gap-3">
-            <div className="text-m text-slate-500">{session.user.email.split('@')[0]}</div>
-            <button onClick={handleSignOut} className="px-3 py-1 bg-red-500 text-white rounded">Sign out</button>
-          </div>
-        </header>
-      </div>
+      <Header session={session} handleSignOut={handleSignOut} />
       <Center>
 
         <main className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <section className="md:col-span-1">
-            <Card>
-              <h2 className="text-lg font-semibold mb-3">Add new word</h2>
-              <AddWordForm onAdded={() => fetchWords()} userId={session.user.id} />
-            </Card>
 
+            <AddWord supabase={supabase} fetchWords={fetchWords} session={session} />
             <div className="mt-4">
               <Card>
                 <h3 className="font-semibold mb-2">Stats</h3>
@@ -244,46 +234,7 @@ export default function App () {
   )
 }
 
-function AddWordForm ({ onAdded, userId }) {
-  const [german, setGerman] = useState('')
-  const [spanish, setSpanish] = useState('')
-  const [saving, setSaving] = useState(false)
 
-  async function handleSubmit (e) {
-    e.preventDefault()
-    if (!german.trim() || !spanish.trim()) return
-    setSaving(true)
-    const { data, error } = await supabase.from('words').insert([{
-      user_id: userId,
-      german: german.trim(),
-      spanish: spanish.trim(),
-      last_review: null,
-      reviews: 0,
-      correct: 0,
-      wrong: 0,
-    }])
-    if (error) {
-      alert('Error saving: ' + error.message)
-      console.error(error)
-    } else {
-      setGerman('')
-      setSpanish('')
-      if (onAdded) onAdded()
-    }
-    setSaving(false)
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <input className="w-full p-2 border rounded" placeholder="German" value={german} onChange={e => setGerman(e.target.value)} />
-      <input className="w-full p-2 border rounded" placeholder="Spanish" value={spanish} onChange={e => setSpanish(e.target.value)} />
-      <div className="flex gap-2">
-        <button className="px-4 py-2 bg-green-600 text-white rounded" disabled={saving}>Add</button>
-        <button type="button" className="px-4 py-2 bg-slate-200 rounded" onClick={() => { setGerman(''); setSpanish('') }}>Clear</button>
-      </div>
-    </form>
-  )
-}
 
 function ReviewPanel ({ words, onUpdate, fetching }) {
   const [sessionWords, setSessionWords] = useState([])
