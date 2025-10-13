@@ -1,6 +1,13 @@
+import { useState } from "react"
 import Card from "./Card"
 
 export default function WordsList ({ fetchingWords, words, setPath, setWord, supabase, fetchWords }) {
+
+  const [filter, setFilter] = useState('')
+
+  const handleFilterOnChange = (e) => {
+    setFilter(e.target.value)
+  }
 
   const handleEdit = word => {
     setWord(word)
@@ -28,6 +35,7 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
         <h3 className="font-semibold mb-2 w-full pt-3">Palabras</h3>
         <button className="px-3 py-1 bg-blue-500 text-white rounded cursor-pointer" onClick={() => { setPath('words-add') }}>Nueva...</button>
       </div>
+      <div><input placeholder="Filtrar..." onChange={(e) => handleFilterOnChange(e)}></input></div>
       {fetchingWords ? <div>Cargando...</div> : (
 
         <table className="w-full text-sm table-auto  bg-blue-500 mt-0">
@@ -45,16 +53,18 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
           </thead>
           <tbody>
             {words.map((w, i) => (
-              <tr key={w.id} className={((i % 2 == 0) ? "bg-white" : "bg-blue-50")}>
-                <td><p className="mx-3 my-2">{w.german}</p></td>
-                <td><p className="mx-3 my-2">{w.spanish}</p></td>
-                <td><p className="mx-3 my-2">{w.reviews}</p></td>
-                <td><p className="mx-3 my-2">{w.correct}</p></td>
-                <td><p className="mx-3 my-2">{w.wrong}</p></td>
-                <td><p className="mx-3 my-2">{w.last_review ? new Date(w.last_review).toLocaleString() : '-'}</p></td>
-                <td><button className="mx-3 my-1 py-1 px-2 bg-blue-500 text-white text-sm rounded cursor-pointer" onClick={() => handleEdit(w)}>Editar</button></td>
-                <td><button className="mx-3 my-1 py-1 px-2 bg-red-500 text-white text-sm rounded cursor-pointer" onClick={() => { handleDelete(w) }}>Eliminar</button></td>
-              </tr>
+              w.german.includes(filter) || w.spanish.includes(filter) ? (
+                <tr key={w.id} className={((i % 2 == 0) ? "bg-white" : "bg-blue-50")}>
+                  <td><p className="mx-3 my-2">{w.german}</p></td>
+                  <td><p className="mx-3 my-2">{w.spanish}</p></td>
+                  <td><p className="mx-3 my-2">{w.reviews}</p></td>
+                  <td><p className="mx-3 my-2">{w.correct}</p></td>
+                  <td><p className="mx-3 my-2">{w.wrong}</p></td>
+                  <td><p className="mx-3 my-2">{w.last_review ? new Date(w.last_review).toLocaleString() : '-'}</p></td>
+                  <td><button className="mx-3 my-1 py-1 px-2 bg-blue-500 text-white text-sm rounded cursor-pointer" onClick={() => handleEdit(w)}>Editar</button></td>
+                  <td><button className="mx-3 my-1 py-1 px-2 bg-red-500 text-white text-sm rounded cursor-pointer" onClick={() => { handleDelete(w) }}>Eliminar</button></td>
+                </tr>
+              ) : ''
             ))}
           </tbody>
         </table>
