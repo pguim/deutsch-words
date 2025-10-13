@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
 import Card from "./Card"
 
-export default function ReviewPanel ({ words, onUpdate, fetching, supabase, setPath }) {
+export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   const [sessionWords, setSessionWords] = useState([])
+  const [currentAnswer, setCurrentAnswer] = useState('')
   const [index, setIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
-  const [saving, setSaving] = useState(false)
 
   // Utility: compute priority for a word object
   function computePriority (word) {
@@ -31,10 +31,10 @@ export default function ReviewPanel ({ words, onUpdate, fetching, supabase, setP
     setShowAnswer(false)
   }, [words])
 
-  async function mark (correct) {
+  async function checkAnswer () {
     if (!sessionWords[index]) return
-    setSaving(true)
     const w = sessionWords[index]
+    const correct = currentAnswer.toLowerCase() === w.spanish.toLowerCase()
     // optimistic update locally
     const updates = {
       reviews: (w.reviews || 0) + 1,
@@ -44,23 +44,24 @@ export default function ReviewPanel ({ words, onUpdate, fetching, supabase, setP
     }
     const { error } = await supabase.from('words').update(updates).eq('id', w.id)
     if (error) console.error('error updating review', error)
+    setShowAnswer(true)
+  }
+
+  function getNext () {
     // move to next
     setShowAnswer(false)
+    setCurrentAnswer('')
     setIndex(i => i + 1)
-    setSaving(false)
-    if (onUpdate) onUpdate()
   }
 
   if (fetching) return <div>Loading...</div>
   if (!sessionWords.length) return <div>No words yet. Add some to start a review.</div>
 
   const cur = sessionWords[index]
-  const remaining = sessionWords.length - index
-
+  const checkEnable = currentAnswer.length > 1
   return (
     <Card backPath='menu' setPath={setPath}>
       <h2 className="text-lg font-semibold mb-3">Revisión</h2>
-      <div className="mb-4 text-sm text-slate-600">Session words: {sessionWords.length} • Remaining: {remaining}</div>
       {index >= sessionWords.length ? (
         <div className="p-4 border rounded text-center">
           <div className="font-semibold mb-2">Session complete 🎉</div>
@@ -69,27 +70,21 @@ export default function ReviewPanel ({ words, onUpdate, fetching, supabase, setP
       ) : (
         <div>
           <div className="mb-3">
-            <div className="text-sm text-slate-500">Priority: {cur._priority.toFixed(2)}</div>
             <div className="text-2xl font-bold mt-2">{cur.german}</div>
           </div>
 
           {showAnswer ? (
             <div className="mb-4">
               <div className="text-lg text-slate-700">{cur.spanish}</div>
-            </div>
-          ) : null}
+              <button className={"px-2 py-1 bg-blue-500 cursor-pointer  text-white rounded"} onClick={() => getNext()} >Siguiente</button>
 
-          <div className="flex gap-2">
-            {!showAnswer ? (
-              <button onClick={() => setShowAnswer(true)} className="px-4 py-2 bg-slate-200 rounded">Show answer</button>
-            ) : (
-              <>
-                <button onClick={() => mark(true)} disabled={saving} className="px-4 py-2 bg-green-600 text-white rounded">I knew it</button>
-                <button onClick={() => mark(false)} disabled={saving} className="px-4 py-2 bg-red-500 text-white rounded">I missed it</button>
-              </>
-            )}
-            <div className="ml-auto text-sm text-slate-500">{index + 1} / {sessionWords.length}</div>
-          </div>
+            </div>
+          ) :
+            (<div className="flex flex-col gap-2">
+              <input placeholder="Respuesta..." onChange={(e) => setCurrentAnswer(e.target.value)}></input>
+              <button className={`px-2 py-1 ${checkEnable ? "bg-green-500 cursor-pointer" : "bg-green-300"} text-white rounded`} onClick={() => checkAnswer()} disabled={!checkEnable}>Comprobar</button>
+              <div className="ml-auto text-sm text-slate-500">{index + 1} / {sessionWords.length}</div>
+            </div>)}
         </div>
       )}
     </Card>
