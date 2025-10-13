@@ -1,11 +1,25 @@
-import AddWord from "./AddWord"
 import Card from "./Card"
 
-export default function WordsList ({ fetchingWords, words, setPath, setWord }) {
+export default function WordsList ({ fetchingWords, words, setPath, setWord, supabase, fetchWords }) {
 
   const handleEdit = word => {
     setWord(word)
     setPath('words-edit')
+  }
+
+  async function handleDelete (word) {
+    if (confirm(`¿Realmente desea eliminar la palabra \n ${word.german} - ${word.spanish}\n?`)) {
+      const { error } = await supabase
+        .from('words')
+        .delete()
+        .eq('id', word.id)
+
+      if (error) {
+        console.error(error)
+      } else {
+        fetchWords()
+      }
+    }
   }
 
   return (
@@ -39,7 +53,7 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord }) {
                 <td><p className="mx-3 my-2">{w.wrong}</p></td>
                 <td><p className="mx-3 my-2">{w.last_review ? new Date(w.last_review).toLocaleString() : '-'}</p></td>
                 <td><button className="mx-3 my-1 py-1 px-2 bg-blue-500 text-white text-sm rounded cursor-pointer" onClick={() => handleEdit(w)}>Editar</button></td>
-                <td><button className="mx-3 my-1 py-1 px-2 bg-red-500 text-white text-sm rounded cursor-pointer">Eliminar</button></td>
+                <td><button className="mx-3 my-1 py-1 px-2 bg-red-500 text-white text-sm rounded cursor-pointer" onClick={() => { handleDelete(w) }}>Eliminar</button></td>
               </tr>
             ))}
           </tbody>

@@ -168,7 +168,7 @@ export default function App () {
       case 'review':
         return <ReviewPanel words={words} onUpdate={() => fetchWords()} fetching={fetchingWords} supabase={supabase} setPath={setPath} />
       case 'words':
-        return <WordsList words={words} fetchingWords={fetchingWords} setPath={setPath} setWord={setEditWord} />
+        return <WordsList words={words} fetchingWords={fetchingWords} setPath={setPath} setWord={setEditWord} supabase={supabase} fetchWords={fetchWords} />
       case 'words-add':
         return <AddWord supabase={supabase} fetchWords={fetchWords} session={session} setPath={setPath} />
       case 'words-edit':

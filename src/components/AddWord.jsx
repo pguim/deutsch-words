@@ -23,7 +23,7 @@ function AddWordForm ({ onAdded, userId, supabase }) {
     e.preventDefault()
     if (!german.trim() || !spanish.trim()) return
     setSaving(true)
-    const { data, error } = await supabase.from('words').insert([{
+    const { error } = await supabase.from('words').insert([{
       user_id: userId,
       german: german.trim(),
       spanish: spanish.trim(),

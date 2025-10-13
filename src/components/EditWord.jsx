@@ -15,7 +15,7 @@ export default function EditWord ({ supabase, fetchWords, session, setPath, word
   )
 }
 
-function EditWordForm ({ onAdded, supabase, word, userId }) {
+function EditWordForm ({ onAdded, supabase, word }) {
   const [german, setGerman] = useState('')
   const [spanish, setSpanish] = useState('')
   const [saving, setSaving] = useState(false)
