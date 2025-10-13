@@ -1,37 +1,43 @@
+import { useEffect } from "react";
 import Card from "./Card";
 import { useState } from "react";
 
-export default function AddWord ({ supabase, fetchWords, session, setPath }) {
+export default function EditWord ({ supabase, fetchWords, session, setPath, word }) {
   return (
     <Card backPath='words' setPath={setPath}>
-      <h2 className="text-lg font-semibold mb-3">Añadir Palabra</h2>
-      <AddWordForm supabase={supabase} onAdded={() => {
+      <h2 className="text-lg font-semibold mb-3">Editar Palabra</h2>
+      <EditWordForm supabase={supabase} onAdded={() => {
         fetchWords()
         setPath('words')
       }}
-        userId={session.user.id} />
+        userId={session.user.id} word={word} />
     </Card>
   )
 }
 
-function AddWordForm ({ onAdded, userId, supabase }) {
+function EditWordForm ({ onAdded, supabase, word, userId }) {
   const [german, setGerman] = useState('')
   const [spanish, setSpanish] = useState('')
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setGerman(word.german)
+    setSpanish(word.spanish)
+
+  }, [])
 
   async function handleSubmit (e) {
     e.preventDefault()
     if (!german.trim() || !spanish.trim()) return
     setSaving(true)
-    const { data, error } = await supabase.from('words').insert([{
-      user_id: userId,
-      german: german.trim(),
-      spanish: spanish.trim(),
-      last_review: null,
-      reviews: 0,
-      correct: 0,
-      wrong: 0,
-    }])
+    const { error } = await supabase
+      .from('words')
+      .update({
+        german: german.trim(),
+        spanish: spanish.trim()
+      })
+      .eq('id', word.id)
+
     if (error) {
       console.error(error)
     } else {
@@ -47,7 +53,7 @@ function AddWordForm ({ onAdded, userId, supabase }) {
       <input className="w-full p-2 border rounded" placeholder="Alemán" value={german} onChange={e => setGerman(e.target.value)} />
       <input className="w-full p-2 border rounded" placeholder="Castellano" value={spanish} onChange={e => setSpanish(e.target.value)} />
       <div className="flex gap-2">
-        <button className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded" disabled={saving}>Añadir</button>
+        <button className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded" disabled={saving}>Actualizar</button>
         <button type="button" className="cursor-pointer px-4 py-2 bg-slate-200 rounded" onClick={() => { setGerman(''); setSpanish('') }}>Borrar</button>
       </div>
     </form>
