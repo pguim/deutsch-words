@@ -67,8 +67,9 @@ import { createClient } from '@supabase/supabase-js'
 import Header from './components/Header'
 import Card from './components/Card'
 import AddWord from './components/AddWord'
+import Center from './components/Center'
+import LoginForm from './components/LoginForm'
 
-// Replace by env vars in your deployment
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
@@ -85,13 +86,6 @@ function computePriority (word) {
   // Basic formula: more wrongs increases priority; older reviews increase priority
   return (wrong - correct) + daysSince / 3
 }
-
-// Simple Tailwind-styled components inline
-function Center ({ children }) {
-  return <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">{children}</div>
-}
-
-
 
 export default function App () {
   const [session, setSession] = useState(null)
@@ -166,20 +160,7 @@ export default function App () {
 
   if (!session) {
     return (
-      <Center>
-        <Card>
-          <h1 className="text-2xl font-semibold mb-4">Iniciar sessión</h1>
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <input className="w-full p-2 border rounded" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-            <input className="w-full p-2 border rounded" placeholder="Contraseña" type="password" autocomplet="current-password" value={password} onChange={e => setPassword(e.target.value)} />
-            {sessionError ? <h2 className="text-ms font-semibold mb-2 text-red-400">¡Mail o usuario incorrectos! Revise la información y vuelva a intentarlo</h2> : ''}
-            <div className="flex gap-2">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded">Acceder</button>
-              <button type="button" className="px-4 py-2 bg-slate-200 rounded" onClick={() => { setEmail(''); setPassword('') }}>Borrar</button>
-            </div>
-          </form>
-        </Card>
-      </Center>
+      <LoginForm handleSignIn={handleSignIn} email={email} setEmail={setEmail} setPassword={setPassword} sessionError={sessionError} />
     )
   }
 
