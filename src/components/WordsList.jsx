@@ -4,6 +4,7 @@ import IconEdit from "./Icons/IconEdit"
 import IconTrash from "./Icons/IconTrash"
 import IconX from "./Icons/IconX"
 import { useEffect } from "react"
+import ProgressBar from "./ProgressBar"
 
 export default function WordsList ({ fetchingWords, words, setPath, setWord, supabase, fetchWords }) {
 
@@ -68,9 +69,10 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
             <tr className="text-left text-slate-100">
               <th><p className="mx-3 my-2">Alemán</p></th>
               <th><p className="mx-3 my-2">Castellano</p></th>
-              <th><p className="mx-3 my-2">Revisiones</p></th>
-              <th><p className="mx-3 my-2">Correctas</p></th>
-              <th><p className="mx-3 my-2">Falladas</p></th>
+              <th><p className="mx-3 my-2 text-center">Revisiones</p></th>
+              <th><p className="mx-3 my-2 text-center">Correctas</p></th>
+              <th><p className="mx-3 my-2 text-center">Falladas</p></th>
+              <th><p className="mx-3 my-2 text-center">%</p></th>
               <th><p className="mx-3 my-2">Última revisión</p></th>
               <th><p className="mx-3 my-2"></p></th>
               <th><p className="mx-3 my-2"></p></th>
@@ -78,13 +80,23 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
           </thead>
           <tbody>
             {words.map((w, i) => (
-              w.german.includes(filter) || w.spanish.includes(filter) ? (
+              w.german.toLocaleLowerCase().includes(filter.toLocaleLowerCase()) || w.spanish.toLocaleLowerCase().includes(filter.toLocaleLowerCase()) ? (
                 <tr key={w.id} className={((i % 2 == 0) ? "bg-white" : "bg-blue-50")}>
                   <td><p className="mx-3 my-2">{w.german}</p></td>
                   <td><p className="mx-3 my-2">{w.spanish}</p></td>
-                  <td><p className="mx-3 my-2">{w.reviews}</p></td>
-                  <td><p className="mx-3 my-2">{w.correct}</p></td>
-                  <td><p className="mx-3 my-2">{w.wrong}</p></td>
+                  <td><p className="mx-3 my-2 text-center">{w.reviews}</p></td>
+                  <td><p className="mx-3 my-2 text-center">{w.correct}</p></td>
+                  <td><p className="mx-3 my-2 text-center">{w.wrong}</p></td>
+                  <td>
+                    <p className="mx-3 my-2 text-center">
+                      <ProgressBar
+                        value={w.reviews ? Number.parseFloat(w.correct / w.reviews * 100).toFixed(2) : Number.parseFloat(0).toFixed(2)}
+                        width={80}
+                        height={24}
+                        showLabel={true}
+                      />
+                    </p>
+                  </td>
                   <td><p className="mx-3 my-2">{w.last_review ? new Date(w.last_review).toLocaleString() : '-'}</p></td>
                   <td><button className="cursor-pointer mx-2" onClick={() => handleEdit(w)}><IconEdit className="stroke-blue-500 w-6" /></button></td>
                   <td><button className="cursor-pointer mx-2" onClick={() => { handleDelete(w) }}><IconTrash className="stroke-red-500 w-6" /></button></td>
