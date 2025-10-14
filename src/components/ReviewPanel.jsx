@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import ReviewPanelResults from "./ReviewPanelResults"
 import ReviewPanelAnswer from "./ReviewPanelAnswer"
 import ReviewPanelQuestion from "./ReviewPanelQuestion"
+import Card from "./Card"
 
 export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   const [sessionWords, setSessionWords] = useState([])
@@ -70,7 +71,9 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   }
 
   if (fetching) return <div>Loading...</div>
-  if (!sessionWords.length) return <div>No existen palabras. ¡Añade palabras para poder revisarlas!</div>
+  if (!sessionWords.length) return (
+    <Card backPath='menu' setPath={setPath}>No existen palabras. ¡Añade palabras para poder revisarlas!</Card>
+  )
 
   const cur = sessionWords[index]
 
