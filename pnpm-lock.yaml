@@ -8,6 +8,9 @@ dependencies:
   '@supabase/supabase-js':
     specifier: ^2.75.0
     version: 2.75.0
+  '@tabler/icons':
+    specifier: ^3.35.0
+    version: 3.35.0
   '@tailwindcss/vite':
     specifier: ^4.1.14
     version: 4.1.14(vite@7.1.9)
@@ -789,6 +792,10 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    dev: false
+
+  /@tabler/icons@3.35.0:
+    resolution: {integrity: sha512-yYXe+gJ56xlZFiXwV9zVoe3FWCGuZ/D7/G4ZIlDtGxSx5CGQK110wrnT29gUj52kEZoxqF7oURTk97GQxELOFQ==}
     dev: false
 
   /@tailwindcss/node@4.1.14:
