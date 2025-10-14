@@ -10,6 +10,7 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   const [index, setIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [answerValid, setAnswerValid] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState({ question: '', answer: '', rev: false })
   const inputRef = useRef(null)
 
   function computePriority (word) {
@@ -31,9 +32,11 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
     setShowAnswer(false)
   }, [words])
 
-  // 🔹 foco automático fiable
   useEffect(() => {
-    // esperar a que el DOM monte el input
+    if (sessionWords) defineQuestionMode()
+  }, [sessionWords, index])
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       if (!showAnswer && inputRef.current) {
         inputRef.current.focus()
@@ -42,14 +45,21 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
     return () => clearTimeout(timer)
   }, [index, showAnswer])
 
+  const defineQuestionMode = () => {
+    const v = Math.random()
+    if (v > 0.5) {
+      setCurrentQuestion({ question: sessionWords[index]?.german, answer: sessionWords[index]?.spanish, rev: false })
+    } else {
+      setCurrentQuestion({ question: sessionWords[index]?.spanish, answer: sessionWords[index]?.german, rev: true })
+    }
+  }
+
   async function checkAnswer () {
     if (!sessionWords[index]) return
     const w = sessionWords[index]
     console.log(currentAnswer)
 
-    console.log(currentAnswer.toLowerCase())
-    console.log(w.spanish.toLowerCase())
-    const correct = currentAnswer.toLowerCase() === w.spanish.toLowerCase()
+    const correct = currentAnswer.toLowerCase() === currentQuestion.answer.toLowerCase()
     setAnswerValid(correct)
     const updates = {
       reviews: (w.reviews || 0) + 1,
@@ -75,8 +85,6 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
     <Card backPath='menu' setPath={setPath}>No existen palabras. ¡Añade palabras para poder revisarlas!</Card>
   )
 
-  const cur = sessionWords[index]
-
   return (
     <>
       {index >= sessionWords.length ? (
@@ -85,8 +93,8 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
         <>
           {showAnswer ? (
             <ReviewPanelAnswer setPath={setPath}
-              question={cur.german}
-              answer={cur.spanish}
+              question={currentQuestion.question}
+              answer={currentQuestion.answer}
               currentAnswer={currentAnswer}
               answerValid={answerValid}
               getNext={getNext}
@@ -94,7 +102,8 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
           ) : (
             <ReviewPanelQuestion
               setPath={setPath}
-              question={cur.german}
+              question={currentQuestion.question}
+              rev={currentQuestion.rev}
               currentAnswer={currentAnswer}
               setCurrentAnswer={setCurrentAnswer}
               checkAnswer={checkAnswer}

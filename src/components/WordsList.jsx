@@ -3,8 +3,13 @@ import Card from "./Card"
 import IconEdit from "./Icons/IconEdit"
 import IconTrash from "./Icons/IconTrash"
 import IconX from "./Icons/IconX"
+import { useEffect } from "react"
 
 export default function WordsList ({ fetchingWords, words, setPath, setWord, supabase, fetchWords }) {
+
+  useEffect(() => {
+    fetchWords()
+  }, [])
 
   const [filter, setFilter] = useState('')
 
@@ -27,6 +32,10 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
       }
     }
   }
+
+  if (fetchingWords) return (
+    <Card>Cargando...</Card>
+  )
 
   return (
     <Card backPath='menu' setPath={setPath}>

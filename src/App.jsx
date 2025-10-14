@@ -180,7 +180,7 @@ export default function App () {
 
   return (
     <>
-      <Header session={session} handleSignOut={handleSignOut} />
+      <Header session={session} handleSignOut={handleSignOut} setPath={setPath} />
       {switchPanels(path)}
     </>
   )
