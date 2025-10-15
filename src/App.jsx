@@ -1,67 +1,3 @@
-/*
-Vocab SRS - Single-file React skeleton
-Default export: App
-
-WHAT THIS FILE IS: A complete single-file React app (JSX) that uses
-Supabase (Auth + Postgres) to implement:
- - Supabase Auth (email/password)
- - Add word form (german/spanish)
- - Review session of 10 words prioritized by errors / time since last review
- - Stats update (reviews, correct, wrong, last_review)
-
-HOW TO USE / SETUP (short):
-1) Create a Supabase project and set env vars (on Vercel or locally):
-   NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
-2) Create the `words` table in Supabase SQL editor with this schema:
-
--- SQL (run in Supabase SQL editor)
--- Make sure you also add a `user_id` column (uuid) to associate rows with the authenticated user
-create table if not exists public.words (
-  id uuid default auth.uid_generate_v4() primary key,
-  user_id uuid not null,
-  german text not null,
-  spanish text not null,
-  last_review timestamptz,
-  reviews int default 0,
-  correct int default 0,
-  wrong int default 0,
-  created_at timestamptz default now()
-);
-
--- Note: If you prefer an integer serial id, you can change `id` accordingly.
-
-3) Enable Row Level Security (RLS) on the table and add a policy to only allow
-   authenticated users to access their own rows. Example policy (in Policies tab):
-
--- Policy: "Users can manage their rows"
--- USING expression:
-auth.role() = 'authenticated' AND user_id = auth.uid()
--- WITH CHECK expression:
-user_id = auth.uid()
-
-4) Install dependencies (if you're turning this into a full project):
-   - react, react-dom
-   - @supabase/supabase-js
-   - tailwindcss (optional, used classes are Tailwind utilities)
-
-Example (npm):
-  npm init vite@latest my-app --template react
-  cd my-app
-  npm install @supabase/supabase-js
-  # install tailwind per Tailwind docs
-
-5) Environment variables for Vercel/Netlify: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
-
------
-NOTES about design decisions:
- - This single-file is meant to be a starting point. In a real project you would split components
-   into separate files and manage environment variables with a build tool.
- - Authentication uses Supabase Auth signInWithPassword. The App requires a registered user.
- - Priority calculation is done client-side for simplicity. If you later want to offload to the DB,
-   create an SQL view or stored procedure.
-
-*/
-
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import Header from './components/Header'
@@ -74,13 +10,12 @@ import ReviewPanel from './components/ReviewPanel'
 import WordsList from './components/WordsList'
 import MainMenu from './components/MainMenu'
 import EditWord from './components/EditWord'
+import { useRef } from 'react'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-
 
 export default function App () {
   const [session, setSession] = useState(null)
@@ -111,12 +46,6 @@ export default function App () {
     }
   }, [])
 
-  // Load words for the current user
-  useEffect(() => {
-    if (!session?.user?.id) return
-    fetchWords()
-  }, [session])
-
   async function fetchWords () {
     setFetchingWords(true)
     const uid = session.user.id
@@ -131,6 +60,17 @@ export default function App () {
     }
     setFetchingWords(false)
   }
+
+  const prevUserId = useRef(null)
+
+  useEffect(() => {
+    const userId = session?.user?.id
+    if (!userId) return
+
+    if (prevUserId.current === userId) return
+    prevUserId.current = userId
+    fetchWords()
+  }, [session])
 
   async function handleSignIn (e) {
     e.preventDefault()

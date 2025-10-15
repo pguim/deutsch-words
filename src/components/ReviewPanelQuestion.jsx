@@ -3,6 +3,7 @@ import Card from "./Card"
 import { useRef } from "react"
 import IconFlagGermany from "./Icons/IconFlagGermany"
 import IconFlagSpain from "./Icons/IconFlagSpain"
+import { useCallback } from "react"
 
 export default function ReviewPanelQuestion ({ setPath, question, currentAnswer, setCurrentAnswer, checkAnswer, sessionWords, index, rev }) {
   const inputRef = useRef(null)
@@ -15,7 +16,7 @@ export default function ReviewPanelQuestion ({ setPath, question, currentAnswer,
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
-
+  const handleOnChange = useCallback((e) => setCurrentAnswer(e.target.value), [setCurrentAnswer])
   return (
     <Card backPath='menu' setPath={setPath}>
       <form
@@ -44,7 +45,7 @@ export default function ReviewPanelQuestion ({ setPath, question, currentAnswer,
               name={`answer-${index}`}
               placeholder="Respuesta..."
               value={currentAnswer}
-              onChange={(e) => setCurrentAnswer(e.target.value)}
+              onChange={handleOnChange}
               className="border rounded px-2 py-1"
               autoComplete="off"
               autoCorrect="off"

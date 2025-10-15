@@ -3,6 +3,7 @@ import ReviewPanelResults from "./ReviewPanelResults"
 import ReviewPanelAnswer from "./ReviewPanelAnswer"
 import ReviewPanelQuestion from "./ReviewPanelQuestion"
 import Card from "./Card"
+import { useCallback } from "react"
 
 export default function ReviewPanel ({ words, fetching, supabase, setPath, session }) {
   const [sessionWords, setSessionWords] = useState([])
@@ -14,6 +15,8 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath, sessi
   const [incorrectAnswers, setIncorrectAnswers] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState({ question: '', answer: '', rev: false })
   const inputRef = useRef(null)
+
+  const handleSetCurrentAnswer = useCallback(setCurrentAnswer, [setCurrentAnswer])
 
   function computePriority (word) {
     const wrong = word.wrong || 0
@@ -60,7 +63,20 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath, sessi
     if (!sessionWords[index]) return
     const w = sessionWords[index]
 
-    const correct = currentAnswer.toLowerCase() === currentQuestion.answer.toLowerCase()
+
+    let correct = false
+    if (!currentQuestion.rev) {
+      // given answer is one of the options
+      currentQuestion.answer.split(',').forEach(a => {
+        console.log(a)
+        if (currentAnswer.toLowerCase() === a.toLowerCase().trimStart()) correct = true
+      })
+      // given answer are whole options
+      if (currentAnswer.toLowerCase() === currentQuestion.answer.toLowerCase()) correct = true
+    } else {
+      correct = currentAnswer.toLowerCase() === currentQuestion.answer.toLowerCase()
+    }
+
     correct && setCorrectAnswers(v => v + 1)
     !correct && setIncorrectAnswers(v => v + 1)
     setAnswerValid(correct)
@@ -107,7 +123,7 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath, sessi
               question={currentQuestion.question}
               rev={currentQuestion.rev}
               currentAnswer={currentAnswer}
-              setCurrentAnswer={setCurrentAnswer}
+              setCurrentAnswer={handleSetCurrentAnswer}
               checkAnswer={checkAnswer}
               sessionWords={sessionWords}
               index={index}
