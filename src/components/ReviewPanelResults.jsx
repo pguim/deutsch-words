@@ -7,7 +7,7 @@ export default function ReviewPanelResults ({ setPath, correctAnswers, incorrect
     const onKey = (ev) => {
       if (ev.key === 'Enter') {
         ev.preventDefault()
-        setPath('menu')
+        onSubmit()
       }
     }
 
@@ -26,7 +26,7 @@ export default function ReviewPanelResults ({ setPath, correctAnswers, incorrect
   }
 
   const onSubmit = (e) => {
-    e.preventDefault()
+    e?.preventDefault()
     updateReview()
     setPath('menu')
   }
