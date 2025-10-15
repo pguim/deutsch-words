@@ -21,6 +21,7 @@ export default function ReviewPanelQuestion ({ setPath, question, currentAnswer,
       <form
         onSubmit={onSubmit}
         className="flex flex-col gap-3 items-center min-w-80"
+        autoComplete="off"
       >
         <div className="mb-3 text-center flex">
           {rev ? <IconFlagSpain className="w-10 mr-2 mt-2" /> : <IconFlagGermany className="w-10 mr-2 mt-2" />}
@@ -29,14 +30,26 @@ export default function ReviewPanelQuestion ({ setPath, question, currentAnswer,
 
         <>
           <div className="flex flex-row">
+            <input
+              type="text"
+              name="fake"
+              style={{ display: "none" }}
+              autoComplete="off"
+            />
             {rev ? <IconFlagGermany className="w-10 mr-2" /> : <IconFlagSpain className="w-10 mr-2" />}
             <input
               ref={inputRef}
-              name="answer"
+              type="text"
+              id={`answer-${index}`}
+              name={`answer-${index}`}
               placeholder="Respuesta..."
               value={currentAnswer}
               onChange={(e) => setCurrentAnswer(e.target.value)}
               className="border rounded px-2 py-1"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
           </div>
           <button
