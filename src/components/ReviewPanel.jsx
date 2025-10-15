@@ -4,12 +4,14 @@ import ReviewPanelAnswer from "./ReviewPanelAnswer"
 import ReviewPanelQuestion from "./ReviewPanelQuestion"
 import Card from "./Card"
 
-export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
+export default function ReviewPanel ({ words, fetching, supabase, setPath, session }) {
   const [sessionWords, setSessionWords] = useState([])
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [index, setIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [answerValid, setAnswerValid] = useState(false)
+  const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [incorrectAnswers, setIncorrectAnswers] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState({ question: '', answer: '', rev: false })
   const inputRef = useRef(null)
 
@@ -57,9 +59,10 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   async function checkAnswer () {
     if (!sessionWords[index]) return
     const w = sessionWords[index]
-    console.log(currentAnswer)
 
     const correct = currentAnswer.toLowerCase() === currentQuestion.answer.toLowerCase()
+    correct && setCorrectAnswers(v => v + 1)
+    !correct && setIncorrectAnswers(v => v + 1)
     setAnswerValid(correct)
     const updates = {
       reviews: (w.reviews || 0) + 1,
@@ -73,7 +76,6 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   }
 
   function getNext () {
-    console.log('next')
     setShowAnswer(false)
     setCurrentAnswer('')
     setAnswerValid(false)
@@ -88,7 +90,7 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath }) {
   return (
     <>
       {index >= sessionWords.length ? (
-        <ReviewPanelResults setPath={setPath} />
+        <ReviewPanelResults setPath={setPath} correctAnswers={correctAnswers} incorrectAnswers={incorrectAnswers} supabase={supabase} session={session} />
       ) : (
         <>
           {showAnswer ? (

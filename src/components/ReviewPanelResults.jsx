@@ -1,7 +1,7 @@
 import Card from "./Card"
 import { useEffect } from "react"
 
-export default function ReviewPanelResults ({ setPath }) {
+export default function ReviewPanelResults ({ setPath, correctAnswers, incorrectAnswers, supabase, session }) {
 
   useEffect(() => {
     const onKey = (ev) => {
@@ -15,8 +15,19 @@ export default function ReviewPanelResults ({ setPath }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  const updateReview = async () => {
+    const { error } = await supabase.from('reviews').insert([{
+      user_id: session.user.id,
+      date: new Date().toISOString(),
+      correct: correctAnswers,
+      wrong: incorrectAnswers,
+    }])
+    if (error) console.error('error updating review', error)
+  }
+
   const onSubmit = (e) => {
     e.preventDefault()
+    updateReview()
     setPath('menu')
   }
 
@@ -25,7 +36,8 @@ export default function ReviewPanelResults ({ setPath }) {
       <form onSubmit={onSubmit}
         className="p-4 rounded text-center"
       >
-        <div className="font-semibold mb-2">¡Revisión completada! 🎉</div>
+        <div className="font-semibold mb-3">¡Revisión completada! 🎉</div>
+        <div className="mb-6">Has acertado {correctAnswers} de {correctAnswers + incorrectAnswers}</div>
         <button
           type="submit"
           onClick={onSubmit}
