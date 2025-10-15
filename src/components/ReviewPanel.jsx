@@ -68,7 +68,6 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath, sessi
     if (!currentQuestion.rev) {
       // given answer is one of the options
       currentQuestion.answer.split(',').forEach(a => {
-        console.log(a)
         if (currentAnswer.toLowerCase() === a.toLowerCase().trimStart()) correct = true
       })
       // given answer are whole options
