@@ -5,6 +5,7 @@ import IconTrash from "./Icons/IconTrash"
 import IconX from "./Icons/IconX"
 import { useEffect } from "react"
 import ProgressBar from "./ProgressBar"
+import { Loading } from "./Loading"
 
 export default function WordsList ({ fetchingWords, words, setPath, setWord, supabase, fetchWords }) {
 
@@ -34,9 +35,7 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
     }
   }
 
-  if (fetchingWords) return (
-    <Card>Cargando...</Card>
-  )
+  if (fetchingWords) return <Loading />
 
   return (
     <Card backPath='menu' setPath={setPath}>

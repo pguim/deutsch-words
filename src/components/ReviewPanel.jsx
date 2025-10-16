@@ -4,6 +4,7 @@ import ReviewPanelAnswer from "./ReviewPanelAnswer"
 import ReviewPanelQuestion from "./ReviewPanelQuestion"
 import Card from "./Card"
 import { useCallback } from "react"
+import { Loading } from "./Loading"
 
 export default function ReviewPanel ({ words, fetching, supabase, setPath, session }) {
   const [sessionWords, setSessionWords] = useState([])
@@ -97,7 +98,7 @@ export default function ReviewPanel ({ words, fetching, supabase, setPath, sessi
     setIndex(i => i + 1)
   }
 
-  if (fetching) return <div>Loading...</div>
+  if (fetching) return <Loading />
   if (!sessionWords.length) return (
     <Card backPath='menu' setPath={setPath}>No existen palabras. ¡Añade palabras para poder revisarlas!</Card>
   )

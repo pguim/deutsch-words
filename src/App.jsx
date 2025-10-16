@@ -11,6 +11,7 @@ import WordsList from './components/WordsList'
 import MainMenu from './components/MainMenu'
 import EditWord from './components/EditWord'
 import { useRef } from 'react'
+import { Loading } from './components/Loading'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -93,7 +94,7 @@ export default function App () {
     setWords([])
   }
 
-  if (loading) return <Center><Card>Loading...</Card></Center>
+  if (loading) return <Loading />
 
   if (!session) {
     return (
