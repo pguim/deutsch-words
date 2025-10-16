@@ -97,7 +97,10 @@ export default function App () {
 
   if (!session) {
     return (
-      <LoginForm handleSignIn={handleSignIn} email={email} setEmail={setEmail} setPassword={setPassword} sessionError={sessionError} />
+      <>
+        <Header session={session} handleSignOut={handleSignOut} setPath={setPath} />
+        <LoginForm handleSignIn={handleSignIn} email={email} setEmail={setEmail} setPassword={setPassword} sessionError={sessionError} />
+      </>
     )
   }
 
