@@ -108,7 +108,7 @@ export default function App () {
   const switchPanels = (path) => {
     switch (path) {
       case 'stats':
-        return <Stats words={words} setPath={setPath} />
+        return <Stats words={words} setPath={setPath} supabase={supabase} session={session} />
       case 'review':
         return <ReviewPanel words={words} onUpdate={() => fetchWords()} fetching={fetchingWords} supabase={supabase} setPath={setPath} session={session} />
       case 'words':
