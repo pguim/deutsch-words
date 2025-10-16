@@ -14,6 +14,13 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
   }, [])
 
   const [filter, setFilter] = useState('')
+  const [filteredWords, setFilterWords] = useState([])
+
+  useEffect(() => {
+    setFilterWords(words.filter(w =>
+      w.german.toLocaleLowerCase().includes(filter.toLocaleLowerCase()) || w.spanish.toLocaleLowerCase().includes(filter.toLocaleLowerCase())
+    ))
+  }, [filter, words])
 
   const handleEdit = word => {
     setWord(word)
@@ -40,7 +47,7 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
   return (
     <Card backPath='menu' setPath={setPath}>
       <div className="flex flex-row">
-        <h3 className="font-semibold mb-2 w-full">Palabras</h3>
+        <h3 className="font-semibold mb-2 w-full">{`Palabras [${filteredWords.length}]`}</h3>
         <button className="px-3 bg-blue-500 text-white h-8 rounded cursor-pointer" onClick={() => { setPath('words-add') }}>Nueva...</button>
       </div>
       <div className="relative w-[50%] mb-2">
@@ -78,29 +85,28 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
             </tr>
           </thead>
           <tbody>
-            {words.map((w, i) => (
-              w.german.toLocaleLowerCase().includes(filter.toLocaleLowerCase()) || w.spanish.toLocaleLowerCase().includes(filter.toLocaleLowerCase()) ? (
-                <tr key={w.id} className={((i % 2 == 0) ? "bg-white" : "bg-blue-50")}>
-                  <td><p className="mx-3 my-2">{w.german}</p></td>
-                  <td><p className="mx-3 my-2">{w.spanish}</p></td>
-                  <td><p className="mx-3 my-2 text-center">{w.reviews}</p></td>
-                  <td><p className="mx-3 my-2 text-center">{w.correct}</p></td>
-                  <td><p className="mx-3 my-2 text-center">{w.wrong}</p></td>
-                  <td>
-                    <p className="mx-3 my-2 text-center">
-                      <ProgressBar
-                        value={w.reviews ? Number.parseFloat(w.correct / w.reviews * 100).toFixed(2) : Number.parseFloat(0).toFixed(2)}
-                        width={80}
-                        height={24}
-                        showLabel={true}
-                      />
-                    </p>
-                  </td>
-                  <td><p className="mx-3 my-2">{w.last_review ? new Date(w.last_review).toLocaleString() : '-'}</p></td>
-                  <td><button className="cursor-pointer mx-2" onClick={() => handleEdit(w)}><IconEdit className="stroke-blue-500 w-6" /></button></td>
-                  <td><button className="cursor-pointer mx-2" onClick={() => { handleDelete(w) }}><IconTrash className="stroke-red-500 w-6" /></button></td>
-                </tr>
-              ) : ''
+            {filteredWords.map((w, i) => (
+              <tr key={w.id} className={((i % 2 == 0) ? "bg-white" : "bg-blue-50")}>
+                <td><p className="mx-3 my-2">{w.german}</p></td>
+                <td><p className="mx-3 my-2">{w.spanish}</p></td>
+                <td><p className="mx-3 my-2 text-center">{w.reviews}</p></td>
+                <td><p className="mx-3 my-2 text-center">{w.correct}</p></td>
+                <td><p className="mx-3 my-2 text-center">{w.wrong}</p></td>
+                <td>
+                  <p className="mx-3 my-2 text-center">
+                    <ProgressBar
+                      value={w.reviews ? Number.parseFloat(w.correct / w.reviews * 100).toFixed(2) : Number.parseFloat(0).toFixed(2)}
+                      width={80}
+                      height={24}
+                      showLabel={true}
+                    />
+                  </p>
+                </td>
+                <td><p className="mx-3 my-2">{w.last_review ? new Date(w.last_review).toLocaleString() : '-'}</p></td>
+                <td><button className="cursor-pointer mx-2" onClick={() => handleEdit(w)}><IconEdit className="stroke-blue-500 w-6" /></button></td>
+                <td><button className="cursor-pointer mx-2" onClick={() => { handleDelete(w) }}><IconTrash className="stroke-red-500 w-6" /></button></td>
+              </tr>
+
             ))}
           </tbody>
         </table>
