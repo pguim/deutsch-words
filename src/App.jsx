@@ -123,10 +123,10 @@ export default function App () {
   }
 
   return (
-    <>
+    <main className='h-lvh w-lvw overflow-hidden'>
       <Header session={session} handleSignOut={handleSignOut} setPath={setPath} />
       {switchPanels(path)}
-    </>
+    </main>
   )
 }
 
