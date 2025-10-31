@@ -37,10 +37,12 @@ export default function Stats ({ words, setPath, supabase, session }) {
   return (
     <Center>
       <div className="flex flex-col gap-3">
-        <Card backPath='menu' setPath={setPath} noCenter={true} inlineChildren={true}><h3 className="font-semibold self-center">Estadísticas</h3></Card>
+        <Card backPath='menu' setPath={setPath} noCenter={true} inlineChildren={true} className='mb-3 p-2 gap-2 items-center h-12'>
+          <h3 className="font-semibold self-center">Estadísticas</h3>
+        </Card>
         <div className="flex flex-row gap-3">
           <StatsWords words={words} />
-          <StatsReviews words={words} />
+          {/*<StatsReviews words={words} />*/}
         </div>
       </div>
     </Center>

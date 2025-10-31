@@ -47,12 +47,9 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
   return (
 
 
-    <div className="mt-[80px] w-[80%] m-auto h-full">
-      <div className="flex flex-row ">
-        <h3 className="font-semibold mb-2 w-full">{`Palabras [${filteredWords.length}]`}</h3>
-        <button className="px-3 bg-blue-500 text-white h-8 rounded cursor-pointer" onClick={() => { setPath('words-add') }}>Nueva...</button>
-      </div>
-      <div className="relative w-[50%] mb-2">
+    <div className="mt-[80px] w-[80%] m-auto h-[calc(100%-160px)]">
+      <Card backPath='menu' setPath={setPath} noCenter={true} inlineChildren={true} className='p-2 gap-2 items-center h-12'>
+        <h3 className="font-semibold self-center min-w-32">{`Palabras [${filteredWords.length}]`}</h3>
         <input
           placeholder="Filtrar..."
           className="pl-2 pr-8 py-1 border rounded w-full text-sm"
@@ -69,10 +66,12 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
             <IconX className="w-5 h-5" />
           </button>
         }
-      </div>
+        <button className="px-3 bg-blue-500 text-white h-8 rounded cursor-pointer" onClick={() => { setPath('words-add') }}>Nueva...</button>
+      </Card>
+
       {
         fetchingWords ? <div>Cargando...</div> : (
-          <div className="h-[90%] overflow-y-scroll">
+          <div className="h-full overflow-y-scroll bg-white shadow rounded-lg p-2 my-4">
             <table className="w-full text-sm table-auto  bg-blue-500 mt-0 ">
               <thead className="bg-blue-500 h-8">
                 <tr className="text-left text-slate-100">
@@ -87,7 +86,7 @@ export default function WordsList ({ fetchingWords, words, setPath, setWord, sup
                   <th><p className="mx-3 my-2"></p></th>
                 </tr>
               </thead>
-              <tbody className="h-1/4 overflow-y-scroll">
+              <tbody>
                 {filteredWords.map((w, i) => (
                   <tr key={w.id} className={((i % 2 == 0) ? "bg-white" : "bg-blue-50")}>
                     <td><p className="mx-3 my-2">{w.german}</p></td>
